@@ -1,34 +1,68 @@
 import React, { useEffect, useState } from "react";
 import Header from "./Header";
-import { useAuth } from "../context/auth";
+// import { useAuth } from "../context/auth";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
-import { toast } from "react-hot-toast";
+// import { toast } from "react-hot-toast";
+import Pagination from "./Pagination";
+import Sort from "./Sort";
+import TextField from "@mui/material/TextField";
+import Autocomplete from "@mui/material/Autocomplete";
 
 const Home = () => {
   const [respo, setRespo] = useState([]);
-  const [text, setText] = useState();
-  const [auth] = useAuth();
-
-  let handleRespo = async () => {
-    try {
-      let res = await axios.get("http://localhost:8080/api/users/respo");
-      setRespo(res?.data);
-      // console.log(respo);
-    } catch (error) {
-      console.log(error);
-    }
+  // const [text, setText] = useState();
+  // const [auth] = useAuth();
+  const [obj, setObj] = useState({});
+  const [sort, setSort] = useState({ sort: "created_at", order: "asc" });
+  const [filterLanguage] = useState([]);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const searchData = (value1, value2) => {
+    console.log("from search dara ", value1);
+    console.log("from search data 2", value2);
   };
+
   useEffect(() => {
-    handleRespo();
-  }, [auth?.token]);
+    const repos = async () => {
+      try {
+        console.log(search);
+        const { data } = await axios.get(
+          `http://localhost:8080/api/users/resposearch?page=${page}&${
+            sort.sort
+          },${
+            sort.order
+          }&language=${filterLanguage.toString()}&search=${search}`
+        );
+        setObj(data);
+        setRespo(data);
+        console.log(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    repos();
+  }, [sort, filterLanguage, page, search]);
+
+  // let handleRespo = async () => {
+  //   try {
+  //     let res = await axios.get("http://localhost:8080/api/users/respo");
+  //     setRespo(res?.data);
+  //     // console.log(respo);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  // useEffect(() => {
+  //   handleRespo();
+  // }, []);
 
   //copy to clipboard
 
-  const copyToClip = async () => {
-    await navigator.clipboard.writeText(text);
-    toast.success("Linked Copied!!");
-  };
+  // const copyToClip = async () => {
+  //   await navigator.clipboard.writeText(text);
+  //   toast.success("Linked Copied!!");
+  // };
   // const inputHandler = (event) => {
   //   setText(event.target.value);
   // };
@@ -40,6 +74,25 @@ const Home = () => {
         <div className="row">
           <div className="col-md-3">
             <div className="text-center mt-2">
+              {/* <input
+                className="form-control me-2"
+                type="search"
+                placeholder="Search"
+                aria-label="Search"
+                onChange={(e) => setSearch(e.target.value)}
+              /> */}
+              <Autocomplete
+                disablePortal
+                id="combo-box-demo"
+                options={obj.data}
+                getOptionLabel={(r) => r.name}
+                onChange={(e, v) => setSearch(v.name)}
+                onInputChange={(e, v) => setSearch(v)}
+                sx={{ width: 290 }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Search" />
+                )}
+              />
               <div className="list-group">
                 <NavLink
                   to="/dashboard/admin/create-category"
@@ -81,28 +134,32 @@ const Home = () => {
             </div>
           </div>
           <div className="col-md-9">
-            <pre>{JSON.stringify(auth, null, 4)}</pre>
-            <h1>{respo?.data?.length}</h1>
+            {/* <pre>{JSON.stringify(auth, null, 4)}</pre> */}
+            <h1>{obj?.data?.length}</h1>
 
             <div className="d-flex flex-wrap">
-              {respo.data?.map((e) => (
-                <div className="card m-2" style={{ width: "18rem" }}>
+              {respo?.data?.map((e) => (
+                <div
+                  className="card m-2"
+                  style={{ width: "18rem" }}
+                  key={e._id}
+                >
                   <div className="card-body">
                     <h5 className="card-title">{e.name}</h5>
                     <h6 className="card-subtitle mb-2 text-muted">
                       {e.description}
                     </h6>
-                    <a href={e.html_url} target="_blank" className="card-link">
+                    <a href={e.html_url} target="" className="card-link">
                       GitHub Repo
                     </a>
                     <button
                       className="card-link"
-                      value={text}
-                      onClick={copyToClip}
+                      // value={text}
+                      // onClick={copyToClip}
                     >
                       Share
                     </button>
-                    <table class="table table-borderless">
+                    <table className="table table-borderless">
                       <tbody>
                         <tr>
                           <td>Forks :</td>
@@ -144,6 +201,18 @@ const Home = () => {
                 </div>
               ))}
             </div>
+            <Pagination
+              page={page}
+              limit={obj.limit ? obj.limit : 0}
+              total={obj.total ? obj.total : 0}
+              setpage={(page) => setPage(page)}
+            />
+            <Sort sort={sort} setSort={(sort) => setSort(sort)} />
+            {/* <Language
+              filterLanguage={filterLanguage}
+              languages={obj.language ? obj.language : []}
+              setfilterLanguage={(language) => setfilterLanguage(language)}
+            /> */}
           </div>
         </div>
       </div>
