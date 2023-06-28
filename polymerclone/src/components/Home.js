@@ -18,10 +18,6 @@ const Home = () => {
   const [filterLanguage] = useState([]);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const searchData = (value1, value2) => {
-    console.log("from search dara ", value1);
-    console.log("from search data 2", value2);
-  };
 
   useEffect(() => {
     const repos = async () => {
@@ -85,7 +81,7 @@ const Home = () => {
                 disablePortal
                 id="combo-box-demo"
                 options={obj.data}
-                getOptionLabel={(r) => r.name}
+                getOptionLabel={(r) => r.language || ""}
                 onChange={(e, v) => setSearch(v.name)}
                 onInputChange={(e, v) => setSearch(v)}
                 sx={{ width: 290 }}
@@ -94,18 +90,6 @@ const Home = () => {
                 )}
               />
               <div className="list-group">
-                <NavLink
-                  to="/dashboard/admin/create-category"
-                  className="list-group-item list-group-item-action"
-                >
-                  Search keywords
-                </NavLink>
-                <NavLink
-                  to="/dashboard/admin/create-product"
-                  className="list-group-item list-group-item-action"
-                >
-                  Licence Name
-                </NavLink>
                 <NavLink
                   to="/dashboard/admin/products"
                   className="list-group-item list-group-item-action"
@@ -162,8 +146,8 @@ const Home = () => {
                     <table className="table table-borderless">
                       <tbody>
                         <tr>
-                          <td>Forks :</td>
-                          <td>{e.forks_count}</td>
+                          <td>language:</td>
+                          <td>{e.language}</td>
                         </tr>
                         <tr>
                           <td>Licence Name</td>
