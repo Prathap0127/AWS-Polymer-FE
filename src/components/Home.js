@@ -98,13 +98,7 @@ const Home = () => {
                     <a href={e.html_url} target="" className="card-link">
                       GitHub Repo
                     </a>
-                    <button
-                      className="card-link"
-                      // value={text}
-                      // onClick={copyToClip}
-                    >
-                      Share
-                    </button>
+                    <button className="card-link">Share</button>
                     <table className="table table-borderless">
                       <tbody>
                         <tr>
