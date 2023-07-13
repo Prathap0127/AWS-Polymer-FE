@@ -69,7 +69,7 @@ const Home = () => {
                 disablePortal
                 id="combo-box-demo"
                 options={obj.data}
-                getOptionLabel={(r) => r.language || ""}
+                getOptionLabel={(r) => r.name || ""}
                 onChange={(e, v) => setSearch(v)}
                 onInputChange={(e, v) => setSearch(v)}
                 sx={{ width: 290 }}
